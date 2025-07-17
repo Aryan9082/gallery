@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Footballer Gallery</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #facc15;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .card {
+      width: 260px;
+      height: 360px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #1f2937;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.4s ease;
+    }
+
+    .info {
+      position: absolute;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      width: 100%;
+      color: white;
+      padding: 10px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .card:hover .info {
+      transform: translateY(0);
+    }
+
+    .info h3 {
+      margin: 0;
+      color: #facc15;
+    }
+
+    .info p {
+      margin: 4px 0;
+      font-size: 0.85rem;
+    }
+
+    .logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .logos img {
+      height: 22px;
+      width: auto;
+      border-radius: 3px;
+    }
+
+    .stars {
+      color: gold;
+      font-size: 1rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #1f2937;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      color: white;
+      position: relative;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      color: #facc15;
+    }
+
+    .modal-content p {
+      margin: 10px 0;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Football Legends</h1>
+
+<div class="gallery" id="gallery">
+  <!-- Cards will be inserted here -->
+</div>
+
+<!-- Modal -->
+<div class="modal" id="playerModal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2 id="modalName"></h2>
+    <p><strong>Position:</strong> <span id="modalPosition"></span></p>
+    <p><strong>Club:</strong> <span id="modalClub"></span></p>
+    <p><strong>Nation:</strong> <span id="modalNation"></span></p>
+    <p><strong>Goals:</strong> <span id="modalGoals"></span></p>
+    <p><strong>Assists:</strong> <span id="modalAssists"></span></p>
+    <p><strong>Trophies:</strong> <span id="modalTrophies"></span></p>
+    <p><strong>Rating:</strong> <span id="modalRating" class="stars"></span></p>
+  </div>
+</div>
+
+<script>
+  const players = [
+    {
+      name: "Lionel Messi",
+      image: "messi.jpg",
+      position: "Forward",
+      goals: "820+",
+      assists: "350+",
+      trophies: "42",
+      rating: 5,
+      club: "Inter Miami",
+      clubLogo: "inter.png",
+      nation: "Argentina",
+      flag: "https://flagcdn.com/w40/ar.png"
+    },
+    {
+      name: "Cristiano Ronaldo",
+      image: "ronaldo.jpg",
+      position: "Forward",
+      goals: "870+",
+      assists: "270+",
+      trophies: "34",
+      rating: 5,
+      club: "Al Nassr",
+      clubLogo: "nasser.png",
+      nation: "Portugal",
+      flag: "https://flagcdn.com/w40/pt.png"
+    },
+    {
+      name: "Neymar Jr",
+      image: "neymarjr.jpg",
+      position: "Forward",
+      goals: "430+",
+      assists: "240+",
+      trophies: "27",
+      rating: 4,
+      club: "Santos fc",
+      clubLogo: "SA.png",
+      nation: "Brazil",
+      flag: "https://flagcdn.com/w40/br.png"
+    },
+    {
+      name: "Kylian Mbappé",
+      image: "mbappe.jpg",
+      position: "Forward",
+      goals: "280+",
+      assists: "120+",
+      trophies: "13",
+      rating: 4,
+      club: "Real Madrid",
+      clubLogo: "https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png",
+      nation: "France",
+      flag: "https://flagcdn.com/w40/fr.png"
+    },
+    {
+      name: "Erling Haaland",
+      image: "haaland1.jpg",
+      position: "Striker",
+      goals: "190+",
+      assists: "40+",
+      trophies: "8",
+      rating: 4,
+      club: "Manchester City",
+      clubLogo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/1200px-Manchester_City_FC_badge.svg.png",
+      nation: "Norway",
+      flag: "https://flagcdn.com/w40/no.png"
+    },
+    {
+      name: "Kevin De Bruyne",
+      image: "de bruyne.jpg",
+      position: "Midfielder",
+      goals: "110+",
+      assists: "270+",
+      trophies: "19",
+      rating: 4,
+      club: "Manchester City",
+      clubLogo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/1200px-Manchester_City_FC_badge.svg.png",
+      nation: "Belgium",
+      flag: "https://flagcdn.com/w40/be.png"
+    }
+  ];
+
+  const gallery = document.getElementById("gallery");
+  const modal = document.getElementById("playerModal");
+
+  players.forEach(player => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${player.image}" alt="${player.name}">
+      <div class="info">
+        <h3>${player.name}</h3>
+        <p>${player.position}</p>
+        <div class="logos">
+          <img src="${player.flag}" title="${player.nation}" alt="nation flag">
+          <img src="${player.clubLogo}" title="${player.club}" alt="club logo">
+        </div>
+      </div>
+    `;
+    card.onclick = () => openModal(player);
+    gallery.appendChild(card);
+  });
+
+  function openModal(player) {
+    document.getElementById("modalName").innerText = player.name;
+    document.getElementById("modalPosition").innerText = player.position;
+    document.getElementById("modalGoals").innerText = player.goals;
+    document.getElementById("modalAssists").innerText = player.assists;
+    document.getElementById("modalTrophies").innerText = player.trophies;
+    document.getElementById("modalRating").innerText = '★'.repeat(player.rating);
+    document.getElementById("modalClub").innerText = player.club;
+    document.getElementById("modalNation").innerText = player.nation;
+    modal.style.display = "flex";
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  }
+</script>
+
+</body>
+</html>
